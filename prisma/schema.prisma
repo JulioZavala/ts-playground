@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model categories {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  description String?
+  products    products[]
+}
+
+model order_items {
+  id        Int      @id @default(autoincrement())
+  quantity  Int
+  unitPrice Decimal  @db.Decimal(10, 2)
+  orderId   Int
+  productId Int
+  orders    orders   @relation(fields: [orderId], references: [id])
+  products  products @relation(fields: [productId], references: [id])
+}
+
+model orders {
+  id          Int           @id @default(autoincrement())
+  total       Decimal       @db.Decimal(10, 2)
+  status      OrderStatus   @default(PENDING)
+  // mercado pago
+  mpPreferenceId String?
+  mpPaymentId    String?
+  mpStatus       String?
+  // stripe
+  stripeSessionId String?
+  stripePaymentId String?
+  stripeStatus    String?
+  
+  createdAt   DateTime      @default(now())
+  deletedAt   DateTime?
+  userId      Int
+  order_items order_items[]
+  users       users         @relation(fields: [userId], references: [id])
+}
+
+model products {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String?
+  price       Decimal       @db.Decimal(10, 2)
+  stock       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  categoryId  Int?
+  order_items order_items[]
+  categories  categories?   @relation(fields: [categoryId], references: [id])
+}
+
+model users {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  rol       Role     @default(CUSTOMER)
+  createdAt DateTime @default(now())
+  orders    orders[]
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
