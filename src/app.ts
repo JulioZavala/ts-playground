@@ -31,7 +31,11 @@ app.get("/api/test", function (request, response) {
   response.json({ ok: true, message: "Mi API funciona!!!" });
 });
 
-app.listen(PORT, function () {
-  console.log(`El servidor inicio en http://localhost:${PORT}`);
-  console.log(`Swagger docs en http://localhost:${PORT}/api/docs`);
+// app.listen(PORT, function () {
+//   console.log(`El servidor inicio en http://localhost:${PORT}`);
+//   console.log(`Swagger docs en http://localhost:${PORT}/api/docs`);
+// });
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`El servidor inició en el puerto ${PORT}`);
 });
